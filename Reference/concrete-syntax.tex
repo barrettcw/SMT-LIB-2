@@ -518,13 +518,13 @@ Local sort parameters are introduced by a specific binder, \ter{par}.
 Global sort parameters are declared in a script by the command \ter{declare-sort-parameter}
 (see Section~\ref{sec:new-symbols}).
 
-We say that a sort is \define{over} a set of sort constructors and parameters
-if it is built exclusively with symbols from from that set.
-Intuitively, for a given set $C$ of sort constructors and parameters,
-a sort $\tau$ over $C$ stands for any monomorphic sort $\sigma$ obtained 
+We say that a sort is \define{over} a set of sort symbols and parameters
+if it is built exclusively with elements from from that set.
+Intuitively, for a given set $C$ of sort symbols and parameters,
+a sort $\tau$ over $C$ stands for the set of all monomorphic sorts $\sigma$ obtained 
 by replacing the sort parameters of $\tau$ (if any)
 with monomorphic sorts over $C$.
-We call $\sigma$ an \define{instance} of $\tau$.
+We call $\sigma$ a \define{(monomorphic) instance} of $\tau$.
 
 We will write just \emph{sort} to mean a polymorphic sort, and 
 write instead \emph{monomorphic sort} when we want to emphasize 
@@ -555,9 +555,12 @@ We refer to $f$ as \define{polymorphic function symbol}.
 \begin{remark}
 Note that, contrary to other logic or programming languages,
 SMT-LIB does not insist that members of a polymorphic function family
-be defined uniformly.
+be defined uniformly, as in \emph{parametric} polymorphism.
+In our case, a function symbol with a polymorphic type is effectively
+an \emph{infinitely overloaded} symbol.
 In other words, it is possible, for example, for the family of functions
-associated to a function symbol $f$ of rank $\alpha\alpha$ 
+associated to a function symbol $f$ of rank \ter{A\,A},
+where \ter{A} is a sort parameter,
 to contain a function symbol $f$ of rank \ter{Int}\,\ter{Int}, say, 
 that behaves like the identity function and 
 a function of rank \ter{Bool}\,\ter{Bool} that does not.
@@ -1071,14 +1074,21 @@ All terms of the SMT-LIB language are additionally required to be well sorted.
 Well-sortedness rules are presented and discussed in Section~\ref{sec:language},
 in terms of the logic's abstract syntax.
 
-Except for patterns in \ter{match} expressions,
-every occurrence of an \emph{ambiguous} function symbol\footnote{%
-That is, function symbols with more than one possible output sort 
+\begin{newver}
+Because of polymorphism and ad-hoc overloading, it is possible 
+for a function symbol to be \define{ambiguous}, in the sense of
+having more than one possible output sort 
 for the same sequence of input sorts (see Subsection~\ref{sec:signature}).
-}
+This is necessarily the case for \emph{every} non-monomorphic constant symbol.
+More generally, it is true for all non-monomorphic function symbols
+whose output sort contains a sort parameter that occurs in none of its input sort.
+\end{newver}
+
+Except for patterns in \ter{match} expressions,
+every occurrence of an ambiguous function symbol
 $f$ in a term \emph{must} occur as a qualified identifier of the form
 \expr{(as $f$ $\tau$)} where $\tau$ is the intended output sort
-of that occurrence.\endnote{
+of that occurrence \new{and an instance of one of $f$'s output sorts}.\endnote{
 This restriction eliminates the need for a solver to do sort inference
 in order to determine the sorts of terms containing applications 
 of ambiguous function symbols.
@@ -1086,21 +1096,49 @@ The use of \ter{as} is not required in patterns because
 there sort inference is needed anyway since pattern variables 
 are not explicitly assigned a sort.
 }
-The same requirement applies to occurrences of solver-generated constants
-within terms output by the solver---as the type of these constants is unknown
-to the user.
 
-The example below illustrates the need and use of \ter{as} for typical functions
-associated with lists or arrays, such as the empty list constructor and the
- constant array constructor.
+
+\begin{newver}
+For example, let \ter{A} and \ter{B} be two sort parameters.
+Consider the usual \ter{nil} and \ter{cons} list constructors,
+of respective rank \expr{(List A)} and \expr{A\,(List A)\,(List A)}.
+Then consider function symbol \ter{select} of rank \expr{(Array A B)\,A\,B},
+denoting the array access function, and
+the \ter{const-array} function symbol of rank \expr{B\,(Array A B)}, 
+denoting the constant array function\footnote{
+Taking a value $v$ of sort \ter{B} and 
+returns an array storing $v$ at all positions.
+}.
+The symbols \ter{nil} and \ter{const-array} are ambiguous, 
+while the symbols \ter{cons} and \ter{select} are not.
+This means that none of the following terms is well sorted:
 
 \begin{lstlisting}[linewidth=35.5em]
-; Considering cons and nil as list constructors
-(cons "abc" (as nil (List String)))
+(cons "abc" nil)
+(cons b nil)
+(select (const-array 0.0) i)
+\end{lstlisting}
 
-; Considering a const-array function, taking a value v and
-; returning an array storing v at all positions
-(= a ((as const-array (Array Int Real)) 0.0))
+In contrast, if 
+\ter{"abc"} is a constant of sort \ter{String},
+\ter{b} is a constant of sort \expr{(List B)}, and 
+\ter{i} is a constant of sort \ter{A},
+all the following terms are well sorted:
+
+\begin{lstlisting}[linewidth=35.5em]
+(cons "abc" (as nil (List String)))
+(cons b (as nil (List (List B))))
+(select ((as const-array (Array A Real)) 0.0) i)
+\end{lstlisting}
+\end{newver}
+
+
+The same disambiguation requirement applies to occurrences of 
+solver-generated constants within terms output by the solver ---
+as the type of these constants is unknown to the user.
+
+\begin{lstlisting}[linewidth=40em]
+; Suppose @a1 is solver-generated and has sort (Array Int Int)
 
 (select (as @a1 (Array Int Int)) 3)
 \end{lstlisting}
@@ -1328,7 +1366,9 @@ simply by a more judicious choice of parameter names.
 %In patterns like \expr{(cons x nil)} are problematic 
 }
 \end{newver}
-\cbrem{What about shadowing of global sort parameters?}
+%\cbrem{What about shadowing of global sort parameters?}
+%%CT Does not apply since there are no global sort parameters in theory definitions,
+%%   only in scripts.  
 
 As with sorts, each function symbol declaration 
 may additionally contain zero or more annotations $\alpha_1, \ldots, \alpha_n$,
@@ -1542,8 +1582,12 @@ such a theory would not be not very interesting).
 
 
 %-------------------------------------------------------------------------------
-\subsection{Examples} \label{sec:theory-examples}
+\subsection{Theory Declaration Examples} \label{sec:theory-examples}
 %-------------------------------------------------------------------------------
+
+This subsection contains examples of \emph{possible} theory declarations.
+The list of all \emph{official theories} of SMT-LIB is provided in separate
+documentation available on the SMT-LIB \href{https://www.smt-lib.org}{website}. 
 
 \subsubsection*{Core theory}
 
@@ -1987,27 +2031,28 @@ functions.
 
 This version of SMT-LIB adds support for higher-order logic through the addition
 of a new theory, HO-Core of maps, shown in Figure~\ref{fig:HO-Core},
-where maps can be understood as total functional relations.\endnote{
-We call them \emph{maps} instead of \emph{functions} to distinguish them
+where maps can be understood as total functional relations.
+We call them \emph{maps} to clearly distinguish them
 from SMT-LIB functions since the two are treated differently in the syntax.
-For instance, maps can be passed as arguments while functions cannot. 
-}
-
 
 The theory includes a binary sort constructor \ter{->} for sorts 
 that denote sets of maps 
-(for example \expr{(-> Int Real)} for the sort of maps from \ter{Int} to \ter{Real})
+(for example, \expr{(-> Int Real)} for the sort of maps from \ter{Int} to \ter{Real})
 and an explicit map application operator \ter{\_}.
 
-Note that, with this addition, the language distinguishes 
-between unary \emph{functions} denoted by symbols of rank $\tau_1\tau_2$,
-and \emph{maps} denoted by constant symbols or variables of sort \expr{(-> $\tau_1$ $\tau_2$)}.
-For instance, the latter can be passed as an argument to other functions 
-as any other variable but the former cannot.\endnote{%
-\new{This difference will disappear in the planned Version 3 of the standard
+Note the difference between unary functions, 
+denoted by symbols of rank $\tau_1\tau_2$, and maps, 
+denoted by terms of sort \expr{(-> $\tau_1$ $\tau_2$)}.
+For instance, maps can be passed as arguments and returned by functions
+while functions cannot.\endnote{\new{
+The difference between functions and maps
+will disappear in the planned Version 3 of the standard
 whose underlying logic will change from many-sorted logic 
-to a version of higher-order logic with dependent types.}
-}
+to a version of higher-order logic with dependent types.
+In current terms, 
+there will be no function symbols but only constant symbols,
+possibly of sort \expr{(-> $\tau_1$ $\tau_2$)}.
+}}
 This is no real limitation, though, because it is possible to convert from one to the other
 thanks to the apply operator \ter{\_} and the abstraction binder \ter{lambda}.
 For instance, if \ter{f} is a function symbol of rank $\tau_1\tau_2$,
@@ -2017,7 +2062,7 @@ one can define a corresponding map with the command
 \expr{(define-const c\_f (lambda ((x $\tau_1$)) (f x)))} .
 \end{center}
 %
-Conversely, if \ter{e} is any expression of sort \expr{(-> $\tau_1$ $\tau_2$)},
+Conversely, if \ter{e} is any term of sort \expr{(-> $\tau_1$ $\tau_2$)},
 the corresponding function can be defined by the command 
 \begin{center}
 \expr{(define-fun f\_c ((x $\tau_1$)) $\tau_2$ (\_ e x))} .
@@ -2052,12 +2097,7 @@ and has sort $\tau$.
 
 Similarly, it is not possible to return a function of rank $\tau_1 \cdots \tau_n$
 (with $n > 1$) from another function, but it is possible to return
-a value of sort \expr{(-> $\tau_1$ $\cdots$ $\tau_n$)}.\endnote{\new{
-The difference between functions and maps
-will disappear in Version 3 where, in current terms, 
-there will be no function symbols but only constant symbols,
-possibly of sort \expr{(-> $\tau_1$ $\tau_2$)}.
-}}
+a value of sort \expr{(-> $\tau_1$ $\cdots$ $\tau_n$)}.
 \end{remark}
 \end{newver} 
 
