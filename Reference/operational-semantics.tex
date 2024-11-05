@@ -1312,7 +1312,7 @@ In contrast, sort parameters in SMT-LIB are effectively \emph{schematic} variabl
 standing for monomorphic sorts.\endnote{\new{
 The decision to adopt this semantics is mostly a pragmatic one as it easier 
 for SMT solvers to support sort parameters that range over sorts.
-Note that because of the syntactic restriction to rank-1 polymorphis
+Note that because of the syntactic restriction to rank-1 polymorphism
 (all sort parameters are implicitly universal quantified),
 the SMT-LIB semantics is sound with respect to those where type parameters 
 range over sets: every formula unsatisfiable under the former semantics is 
@@ -1328,7 +1328,7 @@ Consider the commands below, stating that every sort has a domain of size one.
 \end{lstlisting}
 %
 Note that asserting the negation of the formula above \emph{does not} have 
-the effect of stating that there is a sort whose domain that cardinality 
+the effect of stating that there is a sort whose domain has cardinality 
 greater than one.\footnote{
 All sorts have non-empty domains in SMT-LIB.  
 }

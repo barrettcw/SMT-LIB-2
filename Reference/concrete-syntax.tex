@@ -524,7 +524,7 @@ Intuitively, for a given set $C$ of sort symbols and parameters,
 a sort $\tau$ over $C$ stands for the set of all monomorphic sorts $\sigma$ obtained 
 by replacing the sort parameters of $\tau$ (if any)
 with monomorphic sorts over $C$.
-We call $\sigma$ a \define{(monomorphic) instance} of $\tau$.
+We call such a sort $\sigma$ a \define{(monomorphic) instance} of $\tau$.
 
 We will write just \emph{sort} to mean a polymorphic sort, and 
 write instead \emph{monomorphic sort} when we want to emphasize 
@@ -578,7 +578,7 @@ constant symbols in the \nter{spec\_constant} category
 (numerals, decimals, strings, etc.),
 \define{variables}, 
 \define{function symbols}, 
-four kinds of \define{binders} 
+five kinds of \define{binders} 
 (introduced by the reserved words \ter{\new{lambda}}, \ter{let}, \ter{forall}, \ter{exists}, and \ter{match}),
 and an annotation operator: the reserved word \ter{!}.
 In its simplest form, a term is 
@@ -1107,7 +1107,7 @@ denoting the array access function, and
 the \ter{const-array} function symbol of rank \expr{B\,(Array A B)}, 
 denoting the constant array function\footnote{
 Taking a value $v$ of sort \ter{B} and 
-returns an array storing $v$ at all positions.
+returning an array storing $v$ at all positions.
 }.
 The symbols \ter{nil} and \ter{const-array} are ambiguous, 
 while the symbols \ter{cons} and \ter{select} are not.
