@@ -16,14 +16,16 @@ of higher-order logics, in particular:
 the identification of formulas with terms of a distinguished Boolean sort;
 the use of sort symbols of arity greater than 0;
 \begin{newver}
-and starting with Version 2.7, the use of functions as first-class values.
+and starting with Version 2.7, the ability to use of functions as first-class values.
 The latter is achieved by the addition of a background theory of (higher-order) maps,
 which are modeled in the concrete syntax as values 
 of sort \expr{(-> $\tau_1$ $\tau_2$)}
 and are constructible with a $\lambda$-abstraction binder.
 New to Version 2.7 is also the addition of prenex polymorphism in user scripts,
 achieved through the declaration of sort parameters, which can then 
-be used to make assertions containing terms of polymorphic sort.
+be used to make assertions containing terms of polymorphic sort.\footnote{
+The semantics of polymorphism in Version 2.7 is analogous to that of TFF1, the TPTP Typed First-Order Form with Rank-1 Polymorphism~\cite{BlanchetteP13}.
+}
 \end{newver}
 
 These features make for a more flexible and syntactically more uniform 
