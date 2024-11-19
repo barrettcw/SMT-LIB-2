@@ -21,7 +21,6 @@ the design of the concrete syntax was mostly driven by the goal of simplifying p
 as opposed to facilitating human readability.\endnote{
 \label{why-LISP-syntax}
 Preferring ease of parsing over
-%cb human-readability
 human readability is reasonable in this context
 not only because SMT-LIB benchmarks are meant to be read by solvers
 but also because they are produced in the first place by automated tools 
@@ -48,34 +47,8 @@ of lexical tokens from the set defined in this section.
 The whole set of concrete syntax rules is also available 
 for easy reference in Appendix~\ref{app:concrete-syntax}.
 
-%The permitted characters of SMT-LIB source files are a subset of the ASCII character set.
-%They consist of all letters, digits, whitespace characters
-%(space, tab and line-breaking characters), as well as
-%the characters
-%\begin{center}
-%\verb'~ ! @ # $ % ^ & * _ - + = | \ : ; " < > . ? / ( )'
-%\end{center}
-%
 SMT-LIB source files consist of Unicode characters in any 8-bit encoding, 
-such as \href{http://en.wikipedia.org/wiki/UTF-8}{UTF-8},  
-that extends the original 7-bit US-ASCII set.
-While not technically Unicode,
-the \href{http://en.wikipedia.org/wiki/ISO_8859-1}{ISO 8859-1} 
-character set is also allowed since it coincides 
-with the first 256 characters of UTF-8.\endnote{
-The move to the Unicode character standard was motivated by the fact that
-US-ASCII is is inadequate in international settings and
-Unicode has become the dominant standard. 
-}
-
-%\endnote{
-%There was much internal discussion on whether to adopt the Unicode UTF-8 standard instead, 
-%which is used in most web-based applications currently.
-%We opted for ISO 8859-1 mostly because it is a fixed character encoding and is still
-%well supported by all operating systems.
-%A move to UTF-8 might be made in a later version, depending on the feedback and needs
-%of the community.
-%}
+such as \href{http://en.wikipedia.org/wiki/UTF-8}{UTF-8}.
 Most lexical tokens defined below are limited to \href{http://en.wikipedia.org/wiki/ASCII#ASCII_printable_characters}{US-ASCII printable characters},
 namely, characters \dec{32} to \dec{126}.
 The remaining printable characters,
@@ -304,7 +277,6 @@ as an escaping symbol (see Section 2.3 of~\cite{Ste-90}).
 }
 \smallskip
 
-\newpage
 \begin{lstlisting}[linewidth=25.5em]
 |this is a quoted symbol|
 
