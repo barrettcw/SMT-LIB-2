@@ -123,12 +123,12 @@
 
        bv2int(b) := if b(m-1) = 0 then bv2nat(b) else bv2nat(b) - 2^m
 
-   o nat2bv[m], which takes an integer n and returns the (unique) bitvector
+   o nat2bv[m], with 0 < m, which takes a non-negative integer and returns the (unique) bitvector
      b: [0, m) -> {0, 1} such that:
 
        b(m-1)*2^{m-1} + ⋯ + b(0)*2^0 = n mod 2^m
  
-   o int2bv[m], which takes an integer n and returns the (unique) bitvector
+   o int2bv[m], with 0 < m, which takes an integer n and returns the (unique) bitvector
      b: [0, m) -> {0, 1} such that:
 
        b(m-1)*2^{m-1} + ⋯ + b(0)*2^0 = (n + 2^m) mod 2^m

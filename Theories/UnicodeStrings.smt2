@@ -8,6 +8,7 @@
  "Note: history only accounts for content changes, not release changes.
   2024-07-21 Updated to Version 2.7.
   2024-14-07 Fixed typos and ambiguities in definitions of str.replace_re and str.replace_re_all
+  2022-12-07 Fixed comment providing the description of str.replace_re.
   2020-08-06 Fixed an example in Strings constant definition.
   2020-02-09 Layout and minor fixes.
  "
@@ -289,15 +290,14 @@
        ; left-to-right order. 
        (str.replace_all String String String String)
 
-       ; (str.replace_re s r t) is t prepended to s if r contains the empty
-       ; string. Otherwise, it the string obtained by replacing the leftmost
-       ; match of r in s (with ties broken by taking the shorter match), if any,
-       ; by t.
+       ; (str.replace_re s r t) is the string obtained by replacing the
+       ; shortest leftmost match of r in s, if any, by t.
+       ; Note that if the language of r contains the empty string, 
+       ; the result is to prepend t to s.
        (str.replace_re String RegLan String String) 
 
-       ; (str.replace_re_all s r t) is s if r contains the empty string.
-       ; Otherwise, it is the string obtained by replacing, left to right,
-       ; each shortest match of r in s by t.
+       ; (str.replace_re_all s r t) is the string obtained by replacing,
+       ; left-to right, each shortest *non-empty* match of r in s by t.
        (str.replace_re_all String RegLan String String) 
 
        ; RE complement
@@ -451,7 +451,7 @@
        a non-empty string literal l₂.
 
        Ex: ⟦""a\u02C1""⟧ = ⟦""a""⟧⟦""\u02C1""⟧ = 0x00061 0x002C1
-           ⟦""\u2CA""⟧ = 0x0005C ⟦""u2CXA""⟧           (not an escape sequence)
+           ⟦""\u2CA""⟧ = 0x0005C ⟦""u2CA""⟧            (not an escape sequence)
            ⟦""\u2CXA""⟧ = 0x0005C ⟦""u2CXA""⟧          (not an escape sequence)
            ⟦""\u{ACG}A""⟧ = 0x0005C ⟦""u{ACG}A""⟧      (not an escape sequence)
 
