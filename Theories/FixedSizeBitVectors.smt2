@@ -4,10 +4,10 @@
  :smt-lib-release "2024-07-21"
  :written-by "Clark Barrett, Pascal Fontaine, Silvio Ranise, and Cesare Tinelli"
  :date "2010-05-02" 
- :last-updated "2025-02-16"
+ :last-updated "2025-02-19"
  :update-history
  "Note: history only accounts for content changes, not release changes.
-  2025-02-16 Renamed and updated conversion operators to/from integers.
+  2025-02-19 Renamed and updated conversion operators to/from integers.
   2024-07-21 Updated to Version 2.7.
   2024-07-16 Added conversion operators between bitvectors and integers.
   2024-07-14 Fixed minor typos.
@@ -90,11 +90,11 @@
  :funs_description "
    If the Ints theory is also present, all function symbols with declarations of the form
 
-       (bv.ubv_to_int (_ BitVec m) Int)
+       (ubv_to_int (_ BitVec m) Int)
     or
-       (bv.sbv_to_int (_ BitVec m) Int)
+       (sbv_to_int (_ BitVec m) Int)
     or
-       ((_ Int.to_bv m) Int (_ BitVec m))
+       ((_ bv_from_int m) Int (_ BitVec m))
 
     where
     - m is a numeral greater than 0.
@@ -240,21 +240,21 @@
    interprets them according to the semantics defined there.  We further
    define:
 
-   [[(bv.ubv_to_int s)]] := bv2nat([[s]])
+   [[(ubv_to_int s)]] := bv2nat([[s]])
 
-   [[(bv.sbv_to_int s)]] := if [[s]](m-1) = 0 then bv2nat([[s]])
-                                              else bv2nat([[s]]) - 2^m
+   [[(sbv_to_int s)]] := if [[s]](m-1) = 0 then bv2nat([[s]])
+                                           else bv2nat([[s]]) - 2^m
 
    where s is of sort (_ BitVec m) and 0 < m.  We also define:
 
-   [[((_ Int.to_bv N) x)]] := nat2bv[[[N]]]([[x]] mod 2^[[N]])
+   [[((_ bv_from_int N) x)]] := nat2bv[[[N]]]([[x]] mod 2^[[N]])
 
    where N is a numeral greater than 0 and x is a term of sort Int.
 
    Notice that the semantics are correct regardless of whether the intended
    target is a signed or unsigned bitvector.  For example:
 
-     [[((_ Int.to_bv 4) -7)]] = [[((_ Int.to_bv 4) 9)]] = 1001.
+     [[((_ bv_from_int 4) -7)]] = [[((_ bv_from_int 4) 9)]] = 1001.
 
    In both cases, the mod operation (as defined above to always return a
    nonnegative value) leads to the correct result.
