@@ -4,10 +4,10 @@
  :smt-lib-release "2024-07-21"
  :written-by "Clark Barrett, Pascal Fontaine, Silvio Ranise, and Cesare Tinelli"
  :date "2010-05-02"
- :last-updated "2025-02-19"
+ :last-updated "2025-02-25"
  :update-history
  "Note: history only accounts for content changes, not release changes.
-  2025-02-19 Renamed and updated conversion operators to/from integers.
+  2025-02-25 Renamed and updated conversion operators to/from integers.
   2024-07-21 Updated to Version 2.7.
   2024-07-15 Added conversion operators between bitvectors and integers.
   2024-07-14 Minor disambiguation.
@@ -94,7 +94,7 @@
       - convert bitvector, interpreted as unsigned, to its integer value
     (sbv_to_int (_ BitVec m) Int)
       - convert a bitvector, interpreted as signed, to its integer value
-    ((_ bv_from_int m) (Int) (_ BitVec m))
+    ((_ int_to_bv m) (Int) (_ BitVec m))
       - convert an Integer to a bitvector
 
   Defined below:
